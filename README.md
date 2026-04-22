@@ -70,7 +70,7 @@ Je suis à la recherche d'une **opportunité en alternance** dans le domaine du 
 
 [![Email](https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:noaducrot16@gmail.com)
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-FF6B35?style=for-the-badge&logo=firefox&logoColor=white)](https://tonsite.com)
+[![Portfolio](https://img.shields.io/badge/Portfolio-FF6B35?style=for-the-badge&logo=firefox&logoColor=white)](index.html)
 
 </div>
 
