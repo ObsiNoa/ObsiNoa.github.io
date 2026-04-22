@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Gameplay Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0d14;
+      --surface:   #14141f;
+      --card:      #1a1a2e;
+      --border:    #2a2a45;
+      --pink:      #ff6eb4;
+      --lavender:  #b48aff;
+      --mint:      #7fffd4;
+      --star:      #ffe169;
+      --text:      #e8e0f5;
+      --muted:     #7a708e;
+      --glow-pink: rgba(255,110,180,0.18);
+      --glow-lav:  rgba(180,138,255,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ── */
+    #cursor {
+      position: fixed; width: 18px; height: 18px;
+      background: var(--pink); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform .15s, background .2s;
+      mix-blend-mode: screen;
+    }
+    #cursor-trail {
+      position: fixed; width: 36px; height: 36px;
+      border: 2px solid var(--lavender); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: left .12s ease, top .12s ease;
+      opacity: .5;
+    }
+
+    /* ── Stars bg ── */
+    #stars-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; opacity: .55;
+    }
+
+    /* ── Layout ── */
+    main { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: center; gap: 8px;
+      padding: 14px 0; backdrop-filter: blur(14px);
+      background: rgba(13,13,20,.75);
+      border-bottom: 1px solid var(--border);
+    }
+    nav a {
+      color: var(--muted); text-decoration: none;
+      font-weight: 700; font-size: .85rem;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    nav a:hover {
+      color: var(--pink);
+      border-color: var(--pink);
+      background: var(--glow-pink);
+    }
+
+    /* ── Hero ── */
+    #hero {
+      text-align: center;
+      padding: 90px 0 60px;
+    }
+    .avatar-wrap {
+      position: relative; display: inline-block;
+      margin-bottom: 28px;
+    }
+    .avatar {
+      width: 110px; height: 110px; border-radius: 50%;
+      border: 3px solid var(--pink);
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 0 30px var(--glow-pink), 0 0 60px var(--glow-lav);
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+    .avatar-badge {
+      position: absolute; bottom: 4px; right: 4px;
+      background: var(--lavender); color: #0d0d14;
+      font-size: .65rem; font-weight: 800;
+      padding: 3px 8px; border-radius: 999px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--lavender));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1; margin-bottom: 12px;
+    }
+    .tagline {
+      color: var(--muted); font-size: 1rem;
+      margin-bottom: 28px; letter-spacing: .04em;
+    }
+    .tagline span { color: var(--mint); font-weight: 700; }
+
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .tag {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 5px 14px; border-radius: 999px;
+      font-size: .8rem; font-weight: 700;
+      transition: border-color .2s, color .2s;
+    }
+    .tag:hover { border-color: var(--pink); color: var(--pink); }
+
+    /* ── Section titles ── */
+    section { margin-top: 72px; }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+    .section-title .emoji { font-style: normal; }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .skill-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .skill-card:hover {
+      border-color: var(--lavender);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px var(--glow-lav);
+    }
+    .skill-icon { font-size: 2rem; margin-bottom: 12px; }
+    .skill-name { font-weight: 800; font-size: .95rem; margin-bottom: 6px; }
+    .skill-level { font-size: .78rem; color: var(--muted); }
+
+    /* ── Soft skills ── */
+    .softskills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .soft-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px 20px;
+      transition: border-color .25s, transform .25s;
+    }
+    .soft-card:hover {
+      border-color: var(--mint);
+      transform: translateY(-4px);
+    }
+    .soft-card .emoji { font-size: 1.6rem; display: block; margin-bottom: 10px; }
+    .soft-card h3 { font-weight: 800; font-size: .95rem; margin-bottom: 6px; }
+    .soft-card p { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .project-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; overflow: hidden;
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+      display: flex; flex-direction: column;
+      text-decoration: none; color: inherit;
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px var(--glow-pink);
+      border-color: var(--pink);
+    }
+    .project-thumb {
+      height: 140px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .project-thumb::before {
+      content: ''; position: absolute; inset: 0;
+      opacity: .25;
+    }
+    .thumb-unreal::before { background: linear-gradient(135deg,#1a1a2e,#ff6eb4); }
+    .thumb-unity::before  { background: linear-gradient(135deg,#1a1a2e,#7fffd4); }
+    .thumb-proto::before  { background: linear-gradient(135deg,#1a1a2e,#ffe169); }
+
+    .project-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .project-engine {
+      font-size: .7rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .engine-ue  { color: var(--pink); }
+    .engine-uni { color: var(--mint); }
+    .engine-cpp { color: var(--star); }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; }
+    .project-desc { font-size: .83rem; color: var(--muted); line-height: 1.55; flex: 1; }
+    .project-footer {
+      margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .proj-tag {
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 999px;
+      font-size: .72rem; font-weight: 700; color: var(--muted);
+    }
+    .wip-badge {
+      background: rgba(255,225,105,.12); color: var(--star);
+      border: 1px solid rgba(255,225,105,.3);
+      padding: 3px 10px; border-radius: 999px;
+      font-size: .72rem; font-weight: 800;
+    }
+    .project-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    /* ── About / timeline ── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px;
+      background: linear-gradient(to bottom, var(--pink), var(--lavender), transparent);
+      border-radius: 2px;
+    }
+    .tl-item { position: relative; margin-bottom: 32px; }
+    .tl-dot {
+      position: absolute; left: -25px; top: 5px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--pink); border: 2px solid var(--bg);
+      box-shadow: 0 0 8px var(--pink);
+    }
+    .tl-year {
+      font-size: .75rem; font-weight: 800; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--lavender); margin-bottom: 4px;
+    }
+    .tl-title { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+    .tl-desc { font-size: .85rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── Contact ── */
+    #contact { text-align: center; }
+    .contact-links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+    .contact-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 999px;
+      font-weight: 800; font-size: .9rem; text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--card); color: var(--text);
+      transition: all .25s;
+    }
+    .contact-btn:hover {
+      border-color: var(--pink); color: var(--pink);
+      background: var(--glow-pink);
+      transform: translateY(-2px);
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 28px; color: var(--muted); font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s, transform .6s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      main { padding: 0 16px 60px; }
+      #hero { padding: 60px 0 40px; }
+
+      nav {
+        gap: 4px;
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      nav a { font-size: .72rem; padding: 5px 10px; }
+
+      h1 { font-size: clamp(1.6rem, 8vw, 2.4rem); }
+      .tagline { font-size: .9rem; }
+
+      .skills-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .softskills-grid { grid-template-columns: 1fr; gap: 12px; }
+      .projects-grid { grid-template-columns: 1fr; gap: 16px; }
+
+      .section-title { font-size: 1.25rem; }
+      section { margin-top: 52px; }
+
+      .contact-links { flex-direction: column; align-items: center; }
+      .contact-btn { width: 100%; max-width: 280px; justify-content: center; }
+    }
+
+    @media (max-width: 400px) {
+      .skills-grid { grid-template-columns: 1fr; }
+      nav a { font-size: .68rem; padding: 4px 8px; }
+    }
+
+    /* Désactive le curseur custom sur touch */
+    @media (hover: none) {
+      body { cursor: auto; }
+      #cursor, #cursor-trail { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<nav>
+  <a href="#hero">🏠 Accueil</a>
+  <a href="#skills">⚙️ Skills</a>
+  <a href="#softskills">💬 Soft Skills</a>
+  <a href="#projects">🎮 Projets</a>
+  <a href="#about">📖 Parcours</a>
+  <a href="#contact">✉️ Contact</a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="avatar-wrap">
+      <div class="avatar">🎮</div>
+      <span class="avatar-badge">En formation</span>
+    </div>
+    <h1>Ducrot Noa<br>Gameplay Developer</h1>
+    <p class="tagline">3 ans de formation · <span>C++ & C#</span> · Unreal Engine & Unity</p>
+    <div class="hero-tags">
+      <span class="tag">🎯 Gameplay Programming</span>
+      <span class="tag">🔷 Unreal Engine 5</span>
+      <span class="tag">⬜ Unity</span>
+      <span class="tag">🟦 Blueprints</span>
+      <span class="tag">💜 C++</span>
+      <span class="tag">💚 C#</span>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="reveal">
+    <h2 class="section-title"><span class="emoji">⚙️</span> Compétences Techniques</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">💜</div>
+        <div class="skill-name">C++</div>
+        <div class="skill-level">Langage principal — Unreal</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">💚</div>
+        <div class="skill-name">C#</div>
+        <div class="skill-level">Langage principal — Unity</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🔷</div>
+        <div class="skill-name">Unreal Engine 5</div>
+        <div class="skill-level">Moteur — gameplay & level</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🟦</div>
+        <div class="skill-name">Blueprints (UE)</div>
+        <div class="skill-level">Visual scripting Unreal</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">⬜</div>
+        <div class="skill-name">Unity</div>
+        <div class="skill-level">Moteur — prototypage rapide</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🎯</div>
+        <div class="skill-name">Game Feel</div>
+        <div class="skill-level">Juice, feedbacks, polish</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOFT SKILLS -->
+  <section id="softskills" class="reveal">
+    <h2 class="section-title"><span class="emoji">💬</span> Soft Skills</h2>
+    <div class="softskills-grid">
+      <div class="soft-card">
+        <span class="emoji">⏱️</span>
+        <h3>Travail sous contrainte</h3>
+        <p>Habitué aux projets courts, je sais prioriser les features et livrer dans les délais un prototype jouable.</p>
+      </div>
+      <div class="soft-card">
+        <span class="emoji">🔄</span>
+        <h3>Adaptabilité</h3>
+        <p>Je passe facilement d'Unreal à Unity, du C++ au C#, selon les besoins du projet.</p>
+      </div>
+      <div class="soft-card">
+        <span class="emoji">📚</span>
+        <h3>Curiosité & auto-formation</h3>
+        <p>Apprentissage constant — documentation, tutorials, communautés game dev.</p>
+      </div>
+      <div class="soft-card">
+        <span class="emoji">🧩</span>
+        <h3>Résolution de problèmes</h3>
+        <p>J'aime débugger, comprendre pourquoi ça casse et trouver des solutions créatives.</p>
+      </div>
+      <div class="soft-card">
+        <span class="emoji">🤝</span>
+        <h3>Esprit d'équipe</h3>
+        <p>Projets réalisés en équipe, communication sur les features et les blocages.</p>
+      </div>
+      <div class="soft-card">
+        <span class="emoji">🌱</span>
+        <h3>Humilité & progression</h3>
+        <p>Je sais que je suis en formation — et c'est ce qui me pousse à m'améliorer chaque jour.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="reveal">
+    <h2 class="section-title"><span class="emoji">🎮</span> Projets</h2>
+    <p style="color:var(--muted); font-size:.88rem; margin-bottom:24px; margin-top:-18px;">
+      Des prototypes et expériences de jeu réalisés dans le cadre de ma formation — courts délais, apprentissages concrets.
+      Ce n'est qu'une petite sélection parmi les projets réalisés.
+    </p>
+    <div class="projects-grid">
+
+      <!-- Projet 1 -->
+      <a href="projects/projet1.html" class="project-card">
+        <div class="project-thumb">
+          <img src="image/MapGeneration.png" alt="MapGeneration" />
+        </div>
+        <div class="project-body">
+          <div class="project-engine engine-uni">Unity</div>
+          <div class="project-title">Projet #1 — MapGeneration</div>
+          <div class="project-desc">Systèmes de génération de terrain 2D avec contraintes</div>
+          <div class="project-footer">
+            <span class="proj-tag">C#</span>
+            <span class="proj-tag">2D</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Projet 2 -->
+      <a href="projects/projet2.html" class="project-card">
+        <div class="project-thumb">
+          <img src="image/MiniGameProject.png" alt="MiniGameProject" />
+        </div>
+        <div class="project-body">
+          <div class="project-engine engine-ue">Unreal Engine 5</div>
+          <div class="project-title">Projet #2 — MiniJeux</div>
+          <div class="project-desc">Projet d'environ une semaine en solo afin de réaliser 3 mini-jeux exploitant les outils physiques de Unreal</div>
+          <div class="project-footer">
+            <span class="proj-tag">Blueprints</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Projet 3 -->
+      <a href="projects/projet3.html" class="project-card">
+        <div class="project-thumb">
+          <img src="image/fnafproject.png" alt="FanGameFNAF" />
+        </div>
+        <div class="project-body">
+          <div class="project-engine engine-ue">Unreal Engine 5</div>
+          <div class="project-title">Projet #3 — FanGameFNAF</div>
+          <div class="project-desc">Premier projet Unreal réalisé en 1 semaine et demi. Tentative de recréation de Five Nights at Freddy's sur Unreal</div>
+          <div class="project-footer">
+            <span class="proj-tag">Blueprints</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ABOUT / TIMELINE -->
+  <section id="about" class="reveal">
+    <h2 class="section-title"><span class="emoji">📖</span> Parcours</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">Année 1 — 2023</div>
+        <div class="tl-title">Début de la formation développeur informatique spécialisée jeu vidéo</div>
+        <div class="tl-desc">Découverte du game development, premiers pas en C ainsi qu'en Python.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--lavender);box-shadow:0 0 8px var(--lavender)"></div>
+        <div class="tl-year">Année 2 — 2024</div>
+        <div class="tl-title">Plongée dans Unity</div>
+        <div class="tl-desc">Apprentissage du C# dans le contexte Unity, maîtrise progressive du moteur.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--mint);box-shadow:0 0 8px var(--mint)"></div>
+        <div class="tl-year">Année 3 — 2025</div>
+        <div class="tl-title">Unreal Engine 5</div>
+        <div class="tl-desc">Bachelor en développement. Apprentissage d'Unreal Engine. Approfondissement des systèmes gameplay complexes, game feel, polish.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="reveal">
+    <h2 class="section-title"><span class="emoji">✉️</span> Me contacter</h2>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:24px;">
+      Disponible pour un stage, une alternance, ou juste discuter game dev ☕
+    </p>
+    <div class="contact-links">
+      <a class="contact-btn" href="mailto:noaducrot16@gmail.com">📧 noaducrot16@gmail.com</a>
+      <a class="contact-btn" href="https://github.com/ObsiNoa" target="_blank">🐙 GitHub</a>
+    </div>
+  </section>
+
+</main>
+
+
+<script>
+  /* ── Cursor ── */
+  const cur = document.getElementById('cursor');
+  const trail = document.getElementById('cursor-trail');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+    trail.style.left = e.clientX + 'px';
+    trail.style.top  = e.clientY + 'px';
+  });
+
+  /* ── Stars canvas ── */
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function makeStars(n) {
+    stars = [];
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.4 + .3,
+        a: Math.random(),
+        speed: Math.random() * .004 + .001
+      });
+    }
+  }
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.a += s.speed;
+      const alpha = (Math.sin(s.a) + 1) / 2;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,180,255,${alpha * .8})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+  resize();
+  makeStars(160);
+  drawStars();
+  window.addEventListener('resize', () => { resize(); makeStars(160); });
+
+  /* ── Scroll reveal ── */
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => io.observe(r));
+</script>
+</body>
+</html>

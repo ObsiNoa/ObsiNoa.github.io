@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nom du Projet — Noa Ducrot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0d14;
+      --card:      #1a1a2e;
+      --border:    #2a2a45;
+      --pink:      #ff6eb4;
+      --lavender:  #b48aff;
+      --mint:      #7fffd4;
+      --star:      #ffe169;
+      --text:      #e8e0f5;
+      --muted:     #7a708e;
+      --glow-pink: rgba(255,110,180,0.18);
+      --glow-lav:  rgba(180,138,255,0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    #cursor {
+      position: fixed; width: 18px; height: 18px;
+      background: var(--pink); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: screen;
+    }
+    #cursor-trail {
+      position: fixed; width: 36px; height: 36px;
+      border: 2px solid var(--lavender); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: left .12s ease, top .12s ease;
+      opacity: .5;
+    }
+
+    #stars-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; opacity: .55;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center;
+      padding: 14px 32px;
+      backdrop-filter: blur(14px);
+      background: rgba(13,13,20,.75);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back {
+      color: var(--muted); text-decoration: none;
+      font-weight: 700; font-size: .85rem;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-back:hover {
+      color: var(--pink);
+      border-color: var(--pink);
+      background: var(--glow-pink);
+    }
+
+    /* ── Main ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 780px; margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    /* ── Header ── */
+    .project-header { margin-bottom: 36px; }
+
+    .project-engine-label {
+      font-size: .75rem; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--pink); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--pink), var(--lavender));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1; margin-bottom: 16px;
+    }
+
+    .project-tags {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .tag {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 4px 14px; border-radius: 999px;
+      font-size: .78rem; font-weight: 700; color: var(--muted);
+    }
+
+    /* ── Image ── */
+    .project-image-wrap {
+      width: 100%; border-radius: 20px; overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 40px;
+      box-shadow: 0 12px 48px rgba(0,0,0,.5);
+    }
+    .project-image-wrap img {
+      width: 100%; display: block;
+      object-fit: cover;
+      transition: transform .4s ease;
+    }
+    .project-image-wrap:hover img { transform: scale(1.02); }
+
+    /* ── Description ── */
+    .project-desc {
+      font-size: 1rem; line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 48px;
+    }
+    .project-desc p { margin-bottom: 16px; }
+    .project-desc p:last-child { margin-bottom: 0; }
+
+    /* ── GitHub link ── */
+    .github-link {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 999px;
+      font-weight: 800; font-size: .95rem; text-decoration: none;
+      border: 1px solid var(--border);
+      background: var(--card); color: var(--text);
+      transition: all .25s;
+    }
+    .github-link:hover {
+      border-color: var(--lavender);
+      color: var(--lavender);
+      background: var(--glow-lav);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--glow-lav);
+    }
+    .github-link svg {
+      width: 20px; height: 20px; fill: currentColor;
+    }
+
+        /* ── Footer ── */
+    footer {
+      padding: 28px; color: var(--muted); font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      main { padding: 40px 16px 80px; }
+      nav { padding: 12px 16px; }
+    }
+
+    @media (hover: none) {
+      body { cursor: auto; }
+      #cursor, #cursor-trail { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<nav>
+  <a class="nav-back" href="../index.html">← Retour au portfolio</a>
+</nav>
+
+<main>
+
+  <!-- EN-TÊTE -->
+  <div class="project-header">
+    <div class="project-engine-label">🔷 Unity</div>
+    <h1>MapGeneration</h1>
+    <div class="project-tags">
+      <span class="tag">C#</span>
+    </div>
+  </div>
+
+  <!-- IMAGE PRINCIPALE -->
+  <div class="project-image-wrap">
+    <img src="../image/MapGeneration.png" alt="Screenshot du projet" />
+    
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div class="project-desc">
+    <p>
+      Le projet était de réaliser une génération procédurale d'un terrain dans Unity comprennant plusieurs types de tiles ainsi que des villes. Le tout, modulable en taille et densitée.
+    </p>
+    <p>
+      Afin de réaliser ce projet je fus en charge de la génération des villes: Celles-ci devaient suivres des conditions spécifiques et modulables.
+      Les conditions en question étaient la régulation de la taille des villes, la présence de certains batiments specifique et l'écart minimal entre ces batiments.
+      Il fallut également réguler quels tiles pourraient remplasser les villes (pas de villes sur les montagnes ou dans l'eau).
+
+      Afin d'accomplir cela, les villes fut construites de façon à ce que chaque villes aient une taille entrée et chaque batiment vas indépendament regarder chaque tiles autour de lui si elle est libre.
+      Si chaque tiles autour est occupe ou non utilisable le batiment va arreter de chercher. L'on peut voir cela comme un algorithme de propagation. Cela parait long mais le code a 2t2 opti;is2 afin de ne prendre que quelques secondes.
+      Une fois le cluster de batiments terminé, l'on va regarder la distance minimal entre les batiments spéciaux et remplacer une maison aléatoire de la ville par l'un des batiments spéciaux.
+      
+      Finalement ne resté plus qu'à implémenter les chemins. Une fois que l'on a toute les villes, il suffisait de faire un algorithme de type A* afin de relier les villes entre elles,
+      tout en ajoutant une variable de poids pour dissuader les chemins passant par le tiles de types eau ou montagnes sans pour autant bloquer les villes entourés par ce type de tiles d'etre relié.
+
+    </p>
+    <p>
+      Je suis plutot fier de la réalisation de ce projet car en plus d'apprendre la génération procédurale j'ai également pu m'intéresser à plusieurs algorithmes de pathfinding.  
+    </p>
+  </div>
+
+  <!-- LIEN GITHUB -->
+  <a class="github-link" href="https://github.com/ObsiNoa/GenerationUnity" target="_blank">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+    </svg>
+    Voir le dépôt GitHub
+  </a>
+
+</main>
+
+<script>
+  const cur = document.getElementById('cursor');
+  const trail = document.getElementById('cursor-trail');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+    trail.style.left = e.clientX + 'px';
+    trail.style.top  = e.clientY + 'px';
+  });
+
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  function makeStars(n) {
+    stars = [];
+    for (let i = 0; i < n; i++) {
+      stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+        r: Math.random()*1.4+.3, a: Math.random(), speed: Math.random()*.004+.001 });
+    }
+  }
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.a += s.speed;
+      const alpha = (Math.sin(s.a)+1)/2;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(200,180,255,${alpha*.8})`; ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+  resize(); makeStars(160); drawStars();
+  window.addEventListener('resize', () => { resize(); makeStars(160); });
+</script>
+</body>
+</html>
